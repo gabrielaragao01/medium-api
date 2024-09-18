@@ -12,8 +12,10 @@ export default class PostController extends BaseController{
     }
 
     async create(req, res) {
+        const user_id = req.auth.id
+
         try {
-            const post = await this.PostService.create(req.body);
+            const post = await this.PostService.create({ ...req.body, user_id });
             this.successHandler(post, res);
         } catch (error) {
             this.errorHandler(error, req, res);

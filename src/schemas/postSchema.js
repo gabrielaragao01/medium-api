@@ -25,7 +25,7 @@ const postSchema = {
         .noUnknown(),
     },
     delete: {
-        body: yup 
+        body: yup
         .object ({
             id: yup.number().integer().required(),
         })

@@ -5,7 +5,6 @@ export default class PostService {
         const transaction = await Post.sequelize.transaction();
 
         try {
-            console.log('Criando:', post)
             const postCreated = await Post.create(post, { transaction });
 
             await transaction.commit();

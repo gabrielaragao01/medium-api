@@ -1,41 +1,51 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import AuthUtils from "../utils/auth";
 
-export default async (req, res, next) => {
-  const { authorization } = req.headers;
+export default class AuthMiddleware {
+	static isAuthorized(req, res, next) {
+		try {
+			const errorResponse = {
+				status: "error",
+				code: 403,
+				message:
+					"Sessão expirada. Logue novamente no sistema para obter acesso.",
+			};
 
-  if (!authorization) {
-    return res.status(401).json({
-      errors: ['Login required'],
-    });
-  }
+			const token = AuthUtils.getBearerToken(req);
 
-  const [, token] = authorization.split(' ');
+			const decodedToken = AuthUtils.decodeData(token);
 
-  try {
-    const dados = jwt.verify(token, process.env.TOKEN_SECRET);
-    const { id, email } = dados;
+			if (
+				(!decodedToken || !decodedToken.id) &&
+				!AuthMiddleware.isRouteToSkipAuthorization(req)
+			) {
+				res.status(403).json(errorResponse);
 
-    const user = await User.findOne({
-      where: {
-        id,
-        email,
-      },
-    });
+				return;
+			}
 
-    if (!user) {
-      return res.status(401).json({
-        errors: ['User Invalid'],
-      });
-    }
+			req.auth = {
+				id: decodedToken?.id,
+			};
 
-    req.userId = id;
-    req.userEmail = email;
-    return next();
-  } catch (e) {
-    console.log(e)
-    return res.status(401).json({
-      errors: ['expired or invalid token'],
-    });
-  }
-};
+			next();
+		} catch (error) {
+			console.error(error);
+			res.status(403).json({
+				status: "error",
+				code: 403,
+				message:
+					"Sessão expirada. Logue novamente no sistema para obter acesso.",
+			});
+		}
+	}
+
+	static isRouteToSkipAuthorization(req) {
+		const routesToSkipAuthorization = [{ method: "GET", path: "/posts" }];
+
+		return routesToSkipAuthorization.some((route) => {
+			return (
+				req.method === route.method && req.baseUrl.includes(route.path)
+			);
+		});
+	}
+}

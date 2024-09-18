@@ -14,7 +14,6 @@ class PostRoutes extends BaseRoutes {
 		this.router.get('/', this.postController.list);
 		this.router.get('/:id', this.postController.listById);
 
-
 		return this.router;
 	}
 }

@@ -1,5 +1,5 @@
 import { sign, verify } from 'jsonwebtoken';
-import config from './config';
+import config from '../config/database.js';
 
 export default class AuthUtils {
 	static decodeData(token, key = config.secretKey) {
