@@ -1,37 +1,22 @@
-import jwt from 'jsonwebtoken'
-import User from '../models/User'
+import BaseController from './BaseController';
+import TokenService from '../services/TokenService'
 
-class TokenController {
-    async store(req, res) {
-        const { email = '', password = '' } = req.body;
+export default class AuthController extends BaseController {
+  constructor() {
+    super();
 
-        if (!email || !password) {
-            return res.status(401).json({
-              errors: ['Credenciais inválidas'],
-            });
-        }
-        const user = await User.findOne({ where: { email }})
+    this.TokenService = new TokenService();
 
-        if (!user) {
-            return res.status(401).json({
-            errors: ['Usuário não existe'],
-        });
-    }
-
-    if (!(await user.passwordIsValid(password))) {
-        return res.status(401).json({
-          errors: ['Senha inválida'],
-        });
-      }
-  
-      const { id } = user;
-      const token = jwt.sign({ id, email }, process.env.TOKEN_SECRET, {
-        expiresIn: process.env.TOKEN_EXPIRATION,
-      });
-  
-      return res.json({ token, user: { name: user.name, id, email } });
+    this.bindActions([
+        "login",
+    ]);
+  }
+  async login(req, res) {
+    try {
+        const userAuthenticated = await this.TokenService.login(req.body);
+        this.successHandler(userAuthenticated, res)
+    } catch (error) {
+        this.errorHandler(error, req, res);
     }
 }
-
-export default new TokenController();
-
+}

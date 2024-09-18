@@ -10,12 +10,7 @@ export default class User extends Model {
       },
       email: {
         type: Sequelize.STRING,
-        defaultValue: '',
-        validate: {
-          isEmail: {
-            msg: 'Invalid Email',
-          },
-        },
+        defaultValue: ''
       },
       password_hash: {
         type: Sequelize.STRING,
@@ -36,5 +31,5 @@ export default class User extends Model {
   }
   passwordIsValid(password) {
     return bcryptjs.compare(password, this.password_hash);
-}
+  }
 }

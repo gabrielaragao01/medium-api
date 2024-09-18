@@ -19,42 +19,22 @@ export default class PostService {
         }
     }
 
-    async update({ changes, filter }) {
-        const transaction = await Post.sequelize.transaction();
+    update({ changes, filter }) {
+		return Post.update(changes, {
+			where: {
+				user_id: filter.logged_user_id,
+				id: filter.id,
+			},
+		});
+	}
 
-        try {
-            const postUpdated = await Post.update(changes, {
-                where: filter,
-                transaction,
-                returning: true,
-            });
-
-            await transaction.commit();
-
-            return postUpdated[1][0]; // Retorna o post atualizado
-        } catch (error) {
-            await transaction.rollback();
-            throw error;
-        }
-    }
-
-    async delete(filter) {
-        const transaction = await Post.sequelize.transaction();
-
-        try {
-            const postDeleted = await Post.destroy({
-                where: filter,
-                transaction,
-            });
-
-            await transaction.commit();
-
-            return postDeleted;
-        } catch (error) {
-            await transaction.rollback();
-            throw error;
-        }
-    }
+    delete(filter) {
+		return Post.destroy({
+			where: {
+				id: filter.id,
+			},
+		});
+	}
 
 	async list() {
         // eslint-disable-next-line no-useless-catch
@@ -80,4 +60,4 @@ export default class PostService {
         }
     }
 }
-	
+

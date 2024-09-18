@@ -1,9 +1,8 @@
 import { sign, verify } from 'jsonwebtoken';
-
-import ConfigUtils from './config';
+import config from './config';
 
 export default class AuthUtils {
-	static decodeData(token, key) {
+	static decodeData(token, key = config.secretKey) {
 		try {
 			return verify(token, key);
 		} catch (err) {
@@ -19,7 +18,8 @@ export default class AuthUtils {
 		return token;
 	}
 
-	static generateToken(payload,  { secret = ConfigUtils.get('apiTokenSecretKey'), expiresIn = 86400 } = {}) {
+	static generateToken(payload,
+        { secret = config.secretKey, expiresIn = 86400 } = {}) {
 		return sign(payload, secret, { expiresIn });
 	}
 

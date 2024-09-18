@@ -1,54 +1,41 @@
-import { AuthUtils } from "@utils";
+import jwt from 'jsonwebtoken';
+import User from '../models/User';
 
-export default class AuthMiddleware {
-	static isAuthorized(req, res, next) {
-		try {
-			const routesToSkipAuthorization = [
-				{ method: "GET", path: "/posts" },
-			];
-            console.log(routesToSkipAuthorization)
-			const errorResponse = {
-				status: "error",
-				code: 403,
-				message:
-					"Session expired. Please log back into the system to gain access.",
-			};
+export default async (req, res, next) => {
+  const { authorization } = req.headers;
 
-			const token = AuthUtils.getBearerToken(req);
-			const decodedToken = AuthUtils.decodeData(token);
+  if (!authorization) {
+    return res.status(401).json({
+      errors: ['Login required'],
+    });
+  }
 
-			if (
-				(!decodedToken || !decodedToken.id) &&
-				!AuthMiddleware.isRouteToSkipAuthorization(req)
-			) {
-				res.status(403).json(errorResponse);
+  const [, token] = authorization.split(' ');
 
-				return;
-			}
+  try {
+    const dados = jwt.verify(token, process.env.TOKEN_SECRET);
+    const { id, email } = dados;
 
-			req.auth = {
-				id: decodedToken?.id,
-			};
+    const user = await User.findOne({
+      where: {
+        id,
+        email,
+      },
+    });
 
-			next();
-		} catch (error) {
-			console.error(error);
-			res.status(403).json({
-				status: "error",
-				code: 403,
-				message:
-					"Session expired. Please log back into the system to gain access.",
-			});
-		}
-	}
+    if (!user) {
+      return res.status(401).json({
+        errors: ['User Invalid'],
+      });
+    }
 
-	static isRouteToSkipAuthorization(req) {
-		const routesToSkipAuthorization = [{ method: "GET", path: "/posts" }];
-
-		return routesToSkipAuthorization.some((route) => {
-			return (
-				req.method === route.method && req.baseUrl.includes(route.path)
-			);
-		});
-	}
-}
+    req.userId = id;
+    req.userEmail = email;
+    return next();
+  } catch (e) {
+    console.log(e)
+    return res.status(401).json({
+      errors: ['expired or invalid token'],
+    });
+  }
+};

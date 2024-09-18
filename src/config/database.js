@@ -7,6 +7,7 @@ module.exports = {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_USERNAME,
     port: process.env.DATABASE_PORT || 5432,
+    secretKey: process.env.TOKEN_SECRET,
   define: {
     timestamps: true,
     underscored: true,

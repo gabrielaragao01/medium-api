@@ -1,7 +1,5 @@
 import BaseRoutes from './baseRoutes.js';
 import PostController from '../controllers/PostController.js';
-// import SchemaValidator from '../utils/SchemaValidator.js';
-// import userSchema from '../schema/userSchema.js';
 
 class PostRoutes extends BaseRoutes {
 	constructor() {
