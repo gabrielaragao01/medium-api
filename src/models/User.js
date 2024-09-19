@@ -6,11 +6,12 @@ export default class User extends Model {
     super.init({
       name: {
         type: Sequelize.STRING,
-        defaultValue: '',
+        defaultValue: ''
       },
       email: {
         type: Sequelize.STRING,
-        defaultValue: ''
+        defaultValue: '',
+        unique: true
       },
       password_hash: {
         type: Sequelize.STRING,
@@ -18,18 +19,20 @@ export default class User extends Model {
     },
       password: {
         type: Sequelize.VIRTUAL,
-        defaultValue: '',
+        defaultValue: ''
       },
     }, {
       sequelize,
     });
 
     this.addHook('beforeSave', async (user) => {
+      console.log(user, 'USER');
       if (user.password) { user.password_hash = await bcryptjs.hash(user.password, 8); }
   });
     return this;
   }
   passwordIsValid(password) {
-    return bcryptjs.compare(password, this.password_hash);
+    console.log(password, this.password_hash);
+    return bcryptjs.compareSync(password, this.password_hash);
   }
 }

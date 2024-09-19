@@ -12,7 +12,13 @@ export default class TokenService {
         if (!user) {
             throw new Error("NOT_FOUND");
         }
-        if (user && !(await user.passwordIsValid(password))) {
+
+        const isPasswordValid = await user.passwordIsValid(password);
+
+        console.log(isPasswordValid, 'IS PASSWORD VALID');
+
+        if (user && !isPasswordValid) {
+            console.log(user.passwordIsValid(password))
             throw new Error('INVALID_PASSWORD');
         }
 

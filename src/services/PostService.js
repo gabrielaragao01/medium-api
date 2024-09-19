@@ -38,7 +38,7 @@ export default class PostService {
 	async list() {
         // eslint-disable-next-line no-useless-catch
         try {
-            const posts = await Post.findAll();
+            const posts = await Post.findAll({ order: [['updated_at', 'DESC']]});
             return posts;
         } catch (error) {
             throw error;

@@ -6,8 +6,6 @@ export default class UserService {
 		const transaction = await User.sequelize.transaction();
 
 		try {
-			user.password = await bcrypt.hash(user.password, 10);
-
 			const userCreated = await User.create(user, { transaction });
 
 			await transaction.commit();
@@ -24,7 +22,7 @@ export default class UserService {
 
 		try {
 			if (changes.password) {
-				changes.password = await bcrypt.hash(changes.password, 10);
+				changes.password = await bcrypt.hash(changes.password, 8);
 			}
 
 			const userUpdated = await User.update(changes, {
@@ -59,6 +57,6 @@ export default class UserService {
 			throw error;
 		}
 	}
-    
+
 }
 
