@@ -1,5 +1,5 @@
-import BaseController from './BaseController';
-import TokenService from '../services/AuthService'
+import BaseController from "./BaseController";
+import TokenService from "../services/AuthService";
 
 export default class AuthController extends BaseController {
   constructor() {
@@ -7,16 +7,14 @@ export default class AuthController extends BaseController {
 
     this.TokenService = new TokenService();
 
-    this.bindActions([
-        "login",
-    ]);
+    this.bindActions(["login"]);
   }
   async login(req, res) {
     try {
-        const userAuthenticated = await this.TokenService.login(req.body);
-        this.successHandler(userAuthenticated, res)
+      const userAuthenticated = await this.TokenService.login(req.body);
+      this.successHandler(userAuthenticated, res);
     } catch (error) {
-        this.errorHandler(error, req, res);
+      this.errorHandler(error, req, res);
     }
-}
+  }
 }

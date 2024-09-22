@@ -1,8 +1,8 @@
-import { ExceptionUtils } from './exception';
+import ExceptionUtils from './exception';
 
-const DEFAULT_ITEMS_PER_PAGE = 10;
+const DEFAULT_ITEMS_PER_PAGE = 10
 
-export default class PaginationUtils {
+class PaginationUtils {
 	static config(options = {}) {
 		this._config = Object.assign({}, options);
 
@@ -28,11 +28,12 @@ export default class PaginationUtils {
 
 	static mount(totalItems) {
 		const response = {
-			itemsPerPage: this._config.items_per_page
+			items_per_page: this._config.items_per_page,
+			total_items: totalItems
 		};
 
 		if (this._config.page === 1) {
-			response.totalPages = Math.ceil(totalItems / this._config.items_per_page);
+			response.total_pages = Math.ceil(totalItems / this._config.items_per_page);
 		}
 
 		return response;
@@ -50,3 +51,5 @@ export default class PaginationUtils {
 		return this._config.items_per_page;
 	}
 }
+
+module.exports = PaginationUtils;

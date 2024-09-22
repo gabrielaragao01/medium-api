@@ -1,4 +1,6 @@
 import Post from "../models/Post";
+import User from "../models/User";
+import PaginationUtils from '../utils/pagination'
 
 export default class PostService {
     async create(post) {
@@ -35,28 +37,46 @@ export default class PostService {
 		});
 	}
 
-	async list() {
-        // eslint-disable-next-line no-useless-catch
-        try {
-            const posts = await Post.findAll({ order: [['updated_at', 'DESC']]});
-            return posts;
-        } catch (error) {
-            throw error;
+	async list(meta) {
+
+        const Pagination = PaginationUtils.config({
+            page: meta.page
+        });
+        const postsPromise = Post.findAll({
+            ...Pagination.getQueryParams(),
+            order: [['updated_at', 'DESC']]
+        });
+
+        let totalItemsPromise;
+        if (Pagination.getPage() === 1) {
+            totalItemsPromise = Post.count({});
         }
+        const [posts, totalItems] = await Promise.all([
+            postsPromise,
+            totalItemsPromise || 0
+        ]);
+
+        return {
+            ...Pagination.mount(totalItems),
+            posts,
+        };
     }
 
-    // Função para listar um post por ID
+
     async listById(id) {
-        // eslint-disable-next-line no-useless-catch
-        try {
-            const post = await Post.findByPk(id);
+            const post = await Post.findByPk(id, {
+                include: [
+                    {
+                        model: User,
+                        as: "user",
+                        attributes: ["id", "name", "email"],
+                    },
+                ],
+            });
             if (!post) {
                 throw new Error("Post not found");
             }
             return post;
-        } catch (error) {
-            throw error;
         }
     }
-}
 
