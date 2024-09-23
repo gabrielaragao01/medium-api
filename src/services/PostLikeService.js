@@ -1,23 +1,21 @@
-import { PostLike, Post } from "../models";
+import PostLike from "../models/PostLike";
+import Post from "../models/Post";
 
 export default class PostLikeService {
-  async like(user_id, post_id) {
-    const transaction = await Post.sequelize.transaction();
+  async like(filter) {
+    const transaction = await PostLike.sequelize.transaction();
+
     try {
-      const post = await Post.findOne({
+      const liked = await PostLike.findOne({
         where: {
-          id: post_id,
+          post_id: filter.id,
+          user_id: filter.user_id,
+          is_deleted: false,
         },
         transaction,
       });
 
-      const liked = await PostLike.findOne({
-        where: {
-          post_id: post_id,
-          user_id: user_id,
-        },
-        transaction,
-      });
+      console.log(liked);
 
       if (liked) {
         throw new Error("Post already liked");
@@ -25,22 +23,22 @@ export default class PostLikeService {
 
       await PostLike.create(
         {
-          post_id: post_id,
-          user_id: user_id,
+          post_id: filter.id,
+          user_id: filter.user_id,
         },
         { transaction }
       );
 
       await Post.increment("total_likes", {
         where: {
-          id: post_id,
+          id: filter.id,
         },
         by: 1,
         transaction,
       });
 
       await transaction.commit();
-      return post;
+      return true;
     } catch (error) {
       await transaction.rollback();
       throw error;

@@ -1,21 +1,22 @@
-import BaseController from "./base";
-import { PostLikeService } from "../services";
+import BaseController from "./BaseController";
+import PostLikeService from "../services/PostlikeService";
 
 export default class PostLikeController extends BaseController {
   constructor() {
     super();
 
-    this.PostLikeService = new PostLikeService();
+    this.postLikeService = new PostLikeService();
 
     this.bindActions(["like"]);
   }
 
   async like(req, res) {
-    const post_id = req.params.id;
-    const user_id = req.auth.id;
     try {
-      await this.PostLikeService.like(user_id, post_id);
-      this.successHandler(true, res);
+      const response = await this.postLikeService.like({
+        ...req.filter,
+        user_id: req.userId,
+      });
+      this.successHandler(response, res);
     } catch (error) {
       this.errorHandler(error, req, res);
     }

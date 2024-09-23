@@ -1,7 +1,7 @@
 import Sequelize, { Model } from "sequelize";
 
 export default class PostLike extends Model {
-  static load(sequelize) {
+  static init(sequelize) {
     return super.init(
       {
         user_id: {
@@ -28,12 +28,8 @@ export default class PostLike extends Model {
         },
       },
       {
-        timestamps: true,
         sequelize,
-        modelName: "post_likes",
         tableName: "post_likes",
-        createdAt: "created_at",
-        updatedAt: "updated_at",
       }
     );
   }

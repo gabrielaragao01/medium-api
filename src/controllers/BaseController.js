@@ -1,13 +1,3 @@
-// class HomeController {
-//     index(req, res) {
-//         res.json({
-//             tudoCerto: true,
-//         });
-//     }
-// }
-
-// export default new HomeController();
-
 import ExceptionUtils from "../utils/exception";
 import { LoggerUtils } from "../utils/logger";
 
