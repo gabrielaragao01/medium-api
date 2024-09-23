@@ -29,7 +29,7 @@ export default class User extends Model {
     );
 
     this.addHook("beforeSave", async (user) => {
-      console.log(user, "USER");
+      console.log('aqui')
       if (user.password) {
         user.password_hash = await bcryptjs.hash(user.password, 8);
       }
@@ -37,7 +37,6 @@ export default class User extends Model {
     return this;
   }
   passwordIsValid(password) {
-    console.log(password, this.password_hash);
     return bcryptjs.compareSync(password, this.password_hash);
   }
 }

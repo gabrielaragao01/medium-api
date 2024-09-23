@@ -1,21 +1,12 @@
 import * as yup from "yup";
 
-const findById = {
-  params: yup
-    .object()
-    .shape({
-      id: yup.number().required(),
-    })
-    .noUnknown(),
-};
-
 const postSchema = {
   create: {
     body: yup
       .object({
-        title: yup.text().required(),
-        content: yup.text().required(),
-        sumary: yup.text().required(),
+        title: yup.string().required(),
+        content: yup.string().required(),
+        sumary: yup.string().required(),
       })
       .noUnknown(),
   },
@@ -26,9 +17,8 @@ const postSchema = {
       })
       .noUnknown(),
   },
-  list_bt_id: {
-    body: yup
-      .object({
+  list_by_id: {
+    body: yup.object({
         id: yup.number().integer().required(),
       })
       .noUnknown(),
@@ -44,13 +34,12 @@ const postSchema = {
     }),
     body: yup
       .object({
-        title: yup.text(),
-        summary: yup.text(),
-        content: yup.text(),
+        title: yup.string(),
+        summary: yup.string(),
+        content: yup.string(),
       })
       .noUnknown(),
   },
-  like: findById,
 };
 
 export default postSchema;

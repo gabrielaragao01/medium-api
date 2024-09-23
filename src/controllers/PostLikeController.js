@@ -12,11 +12,12 @@ export default class PostLikeController extends BaseController {
 
   async like(req, res) {
     try {
-      const response = await this.postLikeService.like({
-        ...req.filter,
-        user_id: req.userId,
+      const user_id = req.auth.id;
+      const postLike = await this.postLikeService.like({
+        id: req.params.id,
+        user_id: user_id,
       });
-      this.successHandler(response, res);
+      this.successHandler(postLike, res);
     } catch (error) {
       this.errorHandler(error, req, res);
     }

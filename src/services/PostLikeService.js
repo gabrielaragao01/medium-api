@@ -4,6 +4,7 @@ import Post from "../models/Post";
 export default class PostLikeService {
   async like(filter) {
     const transaction = await PostLike.sequelize.transaction();
+    console.log(filter);
 
     try {
       const liked = await PostLike.findOne({

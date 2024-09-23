@@ -14,8 +14,6 @@ export default class TokenService {
 
     const isPasswordValid = await user.passwordIsValid(password);
 
-    console.log(isPasswordValid, "IS PASSWORD VALID");
-
     if (user && !isPasswordValid) {
       console.log(user.passwordIsValid(password));
       throw new Error("INVALID_PASSWORD");
