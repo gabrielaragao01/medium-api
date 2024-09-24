@@ -62,21 +62,40 @@ export default class PostService {
         };
     }
 
+    async listById(filter) {
+        const scopes = [];
 
-    async listById(id) {
-            const post = await Post.findByPk(id, {
-                include: [
-                    {
-                        model: User,
-                        as: "user",
-                        attributes: ["id", "name", "email"],
-                    },
-                ],
-            });
-            if (!post) {
-                throw new Error("Post not found");
-            }
-            return post;
+        console.log(filter);
+
+
+        if (filter.logged_user_id) {
+            scopes.push({ method: ["withUserLike", filter.logged_user_id] });
         }
-    }
 
+        console.log(scopes, 'scopes');
+
+
+        const post = await Post.scope(scopes).findByPk(filter.id, {
+            include: [
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ["id", "name", "email"],
+                },
+            ],
+            attributes: [
+                "id",
+                "title",
+                "content",
+                "summary",
+                "total_likes",
+                "available_at",
+            ],
+            logging: true,
+        });
+        if (!post) {
+            throw new Error("Post not found");
+        }
+        return post;
+    }
+}

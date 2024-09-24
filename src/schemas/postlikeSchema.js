@@ -8,5 +8,12 @@ const postlikeSchema = {
         })
         .noUnknown(),
     },
+    dislike: {
+        params: yup
+        .object({
+            id: yup.number().integer().required(),
+        })
+        .noUnknown(),
+    },
     };
 export default postlikeSchema;

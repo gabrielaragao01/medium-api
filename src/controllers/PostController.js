@@ -60,13 +60,17 @@ export default class PostController extends BaseController {
     }
   }
 
-  // List a post by ID
+  // List post by ID
   async listById(req, res) {
     try {
-      const post = await this.PostService.listById(req.params.id);
-      this.successHandler(post, res);
+        const filter = {
+            logged_user_id: req.auth ? req.auth.id : null,
+            id: ~~req.params.id
+        };
+        const post = await this.PostService.listById(filter);
+        this.successHandler(post, res);
     } catch (error) {
-      this.errorHandler(error, req, res);
+        this.errorHandler(error, req, res);
     }
-  }
+}
 }

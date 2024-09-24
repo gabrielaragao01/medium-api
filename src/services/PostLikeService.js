@@ -4,7 +4,6 @@ import Post from "../models/Post";
 export default class PostLikeService {
   async like(filter) {
     const transaction = await PostLike.sequelize.transaction();
-    console.log(filter);
 
     try {
       const liked = await PostLike.findOne({
@@ -15,8 +14,6 @@ export default class PostLikeService {
         },
         transaction,
       });
-
-      console.log(liked);
 
       if (liked) {
         throw new Error("Post already liked");
@@ -45,4 +42,37 @@ export default class PostLikeService {
       throw error;
     }
   }
+  async dislike(filter) {
+    const transaction = await PostLike.sequelize.transaction();
+
+    try{
+      await Promise.all([
+        PostLike.update(
+          {
+            is_deleted: true,
+          },
+          {
+            where: {
+              post_id: filter.id,
+              user_id: filter.user_id,
+            },
+            transaction,
+          }
+        ),
+        Post.decrement("total_likes", {
+          where: {
+            id: filter.id,
+          },
+          by: 1,
+          transaction,
+        }),
+      ]);
+        await transaction.commit();
+        return true;
+
+    }catch(error){
+      await transaction.rollback();
+      throw error
+	}
+}
 }

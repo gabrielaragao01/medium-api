@@ -19,6 +19,7 @@ class PostRoutes extends BaseRoutes {
     this.router.get("/", SchemaValidator.validate(PostSchema.list), this.postController.list);
     this.router.get("/:id", this.postController.listById);
     this.router.post("/:id/like", SchemaValidator.validate(postlikeSchema.like), this.postlikeController.like);
+    this.router.post("/:id/dislike", SchemaValidator.validate(postlikeSchema.dislike), this.postlikeController.dislike);
 
     return this.router;
   }
